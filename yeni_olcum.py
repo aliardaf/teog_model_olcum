@@ -1,14 +1,17 @@
+import os
+
 import pandas as pd
 from mlx_lm import load, generate
 
-dataframe = pd.read_csv("teog_2013_text.csv")
+dataframe = pd.read_csv("./teog_2013_text.csv")
 
 model = "mlx-community/SmolLM-135M-Instruct-4bit"
 
 # Modelin testi çözmesi ve cevapların kayıdı
+
 for i in range(len(dataframe)):
-    model, tokenizer = load(model)
-    response = generate(model, tokenizer, prompt=prompt_0, verbose=True)
+    model, tokenizer = load("mlx-community/SmolLM-135M-Instruct-4bit")
+    response = generate(model, tokenizer, prompt=dataframe.loc[i]['soru'] + "\n A: " + dataframe.loc[i]['cevapa'] + "\n B: " + dataframe.loc[i]['cevapb'] + "\n C: " + dataframe.loc[i]['cevapc'] + "\n D: " + dataframe.loc[i]['cevapd'] + "\n Sadece doğru şıkkın harfini söyle(A, B, C veya D), bu dört harften başka bir şey söyleme.", verbose=True)
     dataframe.at[i, "verilencevap"] = response
 
 # Doğru ve yanlış cevapların sayı kayıdı
@@ -46,14 +49,36 @@ def ders_basari_hesapla(dataframe, sinav):
     dogru_sayisi = ders['dogruyanlis'].sum()
     return (dogru_sayisi / len(ders) * 100) * agirliklar[sinav]
 
-sınav_puanı = ders_basari_hesapla(dataframe, 1) + ders_basari_hesapla(dataframe, 2) + ders_basari_hesapla(dataframe, 3) + ders_basari_hesapla(dataframe, 4) + ders_basari_hesapla(dataframe, 5) + ders_basari_hesapla(dataframe, 6)
+turkce_basari = ders_basari_hesapla(dataframe, 1)
+print(turkce_basari)
+matematik_basari = ders_basari_hesapla(dataframe, 2)
+print(matematik_basari)
+inkilap_basari = ders_basari_hesapla(dataframe, 3)
+print(inkilap_basari)
+fen_basari = ders_basari_hesapla(dataframe, 4)
+print(fen_basari)
+ingilizce_basari = ders_basari_hesapla(dataframe, 5)
+print(ingilizce_basari)
+din_basari = ders_basari_hesapla(dataframe, 6)
+print(din_basari)
+
+
+sınav_puanı = turkce_basari + matematik_basari + inkilap_basari + fen_basari + ingilizce_basari + din_basari
 
 yep = (obp_6 + obp_7 + obp_8 + sınav_puanı/100) / 2 * 3.173747
     # yep = teog puanı
 
-sonuclar = pd.read_csv("sonuclar.csv")
+print("yep")
 
-sonuclar.loc[len(sonuclar)] = {"model": model, "teog 2013 puanı": yep}
+sonuclar = pd.read_csv("./sonuclar.csv")
+
+print("sonuclar okundu")
+
+sonuclar.loc[len(sonuclar)] = {"model": "-community/SmolLM-135M-Instruct-4bit", "teog 2013 puanı": yep}
+
+print("sonuclar yazılacak")
 
 sonuclar.to_csv("sonuclar.csv", index=False)
+
+print("sonuclar yazıldı")
 
