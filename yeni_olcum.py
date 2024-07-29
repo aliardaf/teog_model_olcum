@@ -1,4 +1,3 @@
-import os
 
 import pandas as pd
 from mlx_lm import load, generate
@@ -65,7 +64,7 @@ print(din_basari)
 
 sınav_puanı = turkce_basari + matematik_basari + inkilap_basari + fen_basari + ingilizce_basari + din_basari
 
-yep = (obp_6 + obp_7 + obp_8 + sınav_puanı/100) / 2 * 3.173747
+yep = (obp_6 + obp_7 + obp_8 + sınav_puanı * (7/18)) / 2 
     # yep = teog puanı
 
 print("yep")
